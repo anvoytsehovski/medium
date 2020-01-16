@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 import useFetch from './../../hooks/useFetch'
 
@@ -12,7 +12,8 @@ const Authentication = props => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [username, setUsername] = useState('')
-    const [{ response , isLoading, error }, doFetch] = useFetch(apiUrl)
+    const [isSuccessfullSubmit, setIsSuccessfullSubmit] = useState(false)
+    const [{ response , isLoading }, doFetch] = useFetch(apiUrl)
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -23,6 +24,18 @@ const Authentication = props => {
                 user
             }
         })
+    }
+
+    useEffect(() => {
+        if(!response) {
+            return
+        }
+        localStorage.setItem('token', response.user.token)
+        setIsSuccessfullSubmit(true)
+    }, [response])
+
+    if(isSuccessfullSubmit) {
+        return <Redirect to="/" />
     }
 
     return (
